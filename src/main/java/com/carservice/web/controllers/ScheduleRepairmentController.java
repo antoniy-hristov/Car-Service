@@ -1,10 +1,10 @@
-package com.carservice.web.controllers.view;
+package com.carservice.web.controllers;
 
 import com.carservice.data.entities.User;
 import com.carservice.data.entities.Vehicle;
 import com.carservice.data.repositories.CarServiceRepository;
 import com.carservice.data.repositories.RepairmentTypeRepository;
-import com.carservice.dto.RepairmentDTO;
+import com.carservice.web.dto.RepairmentDTO;
 import com.carservice.services.RepairmentService;
 import com.carservice.services.VehicleService;
 import com.carservice.web.model.VehicleModel;

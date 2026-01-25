@@ -37,7 +37,10 @@
                        th:classappend="${servletPath == '/my-vehicles' ? 'active':''}"
                        href="/my-vehicles">My Vehicles</a>
                 </li>
-                <li class="nav-item">
+                <!--This section should be visible only if the user type is employee or admin-->
+                <li class="nav-item"
+                    th:if="${session.user.getRole_id().getAuthority().equals('ADMIN')
+                    or session.user.getRole_id().getAuthority().equals('EMPLOYEE')}">
                     <a class="nav-link"
                        th:classappend="${servletPath == '/assign-worker' ? 'active':''}"
                        href="/assign-worker">Assign Repairments</a>

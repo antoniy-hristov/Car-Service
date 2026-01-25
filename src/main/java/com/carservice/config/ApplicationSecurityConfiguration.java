@@ -46,38 +46,29 @@ public class ApplicationSecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/user/**", "/unauthorized/**",
-                        "/login", "/register").permitAll()
-                .requestMatchers("/car-services/**").permitAll()
-                .requestMatchers("/my-vehicles/**").permitAll()
-                .requestMatchers("/schedule-repairment/**", "/assign-worker/**").permitAll()
-                .requestMatchers("/api/**").hasAnyAuthority("ADMIN")
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/", true)
-                .permitAll()
-                .and()
-                .exceptionHandling().accessDeniedPage("/unauthorized")
-                .and()
-                .logout(logout ->
-                        logout.logoutSuccessUrl("/login"))
-                .httpBasic();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/", "/css/**", "/js/**", "/images/**",
+                                "/login", "/register", "/unauthorized/**"
+                        ).permitAll()
+                        .requestMatchers("/api/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/unauthorized")
+                );
 
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User
-                        .builder()
-                        .username("user")
-                        .password("password")
-                        .roles("USER")
-                        .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
 }

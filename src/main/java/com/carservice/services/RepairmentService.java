@@ -1,11 +1,8 @@
 package com.carservice.services;
 
-import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.Repairment;
-import com.carservice.data.entities.RepairmentType;
-import com.carservice.data.entities.Vehicle;
 import com.carservice.data.repositories.RepairmentRepository;
-import com.carservice.dto.RepairmentDTO;
+import com.carservice.web.dto.RepairmentDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

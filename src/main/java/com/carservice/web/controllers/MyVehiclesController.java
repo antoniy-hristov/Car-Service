@@ -1,4 +1,4 @@
-package com.carservice.web.controllers.view;
+package com.carservice.web.controllers;
 
 import com.carservice.data.entities.User;
 import com.carservice.services.VehicleService;

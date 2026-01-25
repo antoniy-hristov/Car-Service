@@ -1,94 +1,128 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
+
 <body>
-<div class="col-6">
-    <h4>Register</h4>
-    <form action="#" th:action="@{/register}" th:object="${user}" method="post">
-        <div class="form-group">
-            <table class="register-table">
-                <tr>
-                    <td>
-                        <label for="username">Username</label>
-                        <input class="form-control" type="text" th:field="*{username}" placeholder="Username"
-                               id="username">
-                    </td>
-                    <td>
-                        <div th:if="${#fields.hasErrors('username')}" th:errorclass="error" th:errors="*{username}"/>
-                    </td>
-                </tr>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
 
-                <tr>
-                    <td>
-                        <label for="email">Email</label>
-                        <input class="form-control" type="text" th:field="*{email}" placeholder="Email" id="email">
-                    </td>
-                    <td>
-                        <div th:if="${#fields.hasErrors('email')}" th:errorclass="error" th:errors="*{email}"/>
-                    </td>
-                </tr>
+            <h4 class="mb-4">Register</h4>
 
-                <tr>
-                    <td>
-                        <label for="password">Password</label>
-                        <input class="form-control" type="password" th:field="*{password}" placeholder="Password"
-                               id="password">
-                    </td>
+            <form th:action="@{/register}" th:object="${user}" method="post">
 
-                    <td>
-                        <div th:if="${#fields.hasErrors('password')}" th:errorclass="error" th:errors="*{password}"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="firstName">First Name</label>
-                        <input class="form-control" type="text" th:field="*{firstName}" placeholder="First Name"
-                               id="firstName">
-                    </td>
+                <!-- Username -->
+                <div class="mb-3 row">
+                    <label for="username" class="col-sm-4 col-form-label">Username</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               th:field="*{username}"
+                               id="username"
+                               placeholder="Username"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}"></div>
+                    </div>
+                </div>
 
-                    <td>
-                        <div th:if="${#fields.hasErrors('firstName')}" th:errorclass="error" th:errors="*{firstName}"/>
-                    </td>
-                </tr>
+                <!-- Email -->
+                <div class="mb-3 row">
+                    <label for="email" class="col-sm-4 col-form-label">Email</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               th:field="*{email}"
+                               id="email"
+                               placeholder="Email"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
+                    </div>
+                </div>
 
-                <tr>
-                    <td>
-                        <label for="lastName">Last Name</label>
-                        <input class="form-control" type="text" th:field="*{lastName}" placeholder="Last Name"
-                               id="lastName">
-                    </td>
+                <!-- Password -->
+                <div class="mb-3 row">
+                    <label for="password" class="col-sm-4 col-form-label">Password</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               type="password"
+                               th:field="*{password}"
+                               id="password"
+                               placeholder="Password"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{password}"></div>
+                    </div>
+                </div>
 
-                    <td>
-                        <div th:if="${#fields.hasErrors('lastName')}" th:errorclass="error" th:errors="*{lastName}"/>
-                    </td>
-                </tr>
+                <!-- First Name -->
+                <div class="mb-3 row">
+                    <label for="firstName" class="col-sm-4 col-form-label">First Name</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               th:field="*{firstName}"
+                               id="firstName"
+                               placeholder="First Name"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('firstName')}"
+                             th:errors="*{firstName}"></div>
+                    </div>
+                </div>
 
-                <tr>
-                    <td>
-                        <label for="phoneNumber">Phone Number</label>
-                        <input class="form-control" type="text" th:field="*{phoneNumber}" placeholder="Phone Number"
-                               id="phoneNumber">
-                    </td>
+                <!-- Last Name -->
+                <div class="mb-3 row">
+                    <label for="lastName" class="col-sm-4 col-form-label">Last Name</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               th:field="*{lastName}"
+                               id="lastName"
+                               placeholder="Last Name"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('lastName')}"
+                             th:errors="*{lastName}"></div>
+                    </div>
+                </div>
 
-                    <td>
-                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errorclass="error"
-                             th:errors="*{phoneNumber}"/>
-                    </td>
-                </tr>
+                <!-- Phone Number -->
+                <div class="mb-3 row">
+                    <label for="phoneNumber" class="col-sm-4 col-form-label">Phone Number</label>
+                    <div class="col-sm-8">
+                        <input class="form-control"
+                               th:field="*{phoneNumber}"
+                               id="phoneNumber"
+                               placeholder="Phone Number"/>
+                        <div class="text-danger"
+                             th:if="${#fields.hasErrors('phoneNumber')}"
+                             th:errors="*{phoneNumber}"></div>
+                    </div>
+                </div>
 
-                <tr th:if="${session.user.getRole_id().getAuthority().equals('ADMIN')}">
-                    <td style="display: flex; align-items: center;">
-                        <label for="isEmployee">Is Employee?</label>
-                        <input class="form-control" type="checkbox" th:field="*{isEmployee}" placeholder="isEmployee"
-                               id="isEmployee">
-                    </td>
-                </tr>
+                <!-- Admin only -->
+                <div class="mb-3 row"
+                     th:if="${session.user != null
+                             && session.user.getRole_id().getAuthority().equals('ADMIN')}">
+                    <label for="isEmployee" class="col-sm-4 col-form-label">
+                        Is Employee?
+                    </label>
+                    <div class="col-sm-8 d-flex align-items-center">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               th:field="*{isEmployee}"
+                               id="isEmployee"/>
+                    </div>
+                </div>
 
-            </table>
+                <!-- Submit -->
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">
+                        Create My Account
+                    </button>
+                </div>
+
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary">Create My Account</button>
-    </form>
+    </div>
 </div>
+
 <footer th:replace="fragments :: footer"></footer>
 </body>
 </html>

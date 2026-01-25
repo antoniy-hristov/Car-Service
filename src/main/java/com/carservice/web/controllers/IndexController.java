@@ -1,4 +1,4 @@
-package com.carservice.web.controllers.view;
+package com.carservice.web.controllers;
 
 import com.carservice.data.entities.User;
 import com.carservice.data.repositories.RoleMapper;
@@ -73,11 +73,18 @@ public class IndexController {
         return "/login";
     }
 
+    @PostMapping("/login")
+    public String login() {
+        return "/login";
+    }
+
     @GetMapping("/register")
     public ModelAndView getRegisterForm() {
         UserModel user = new UserModel();
 
         transitionalModel = user;
+
+        user.setIsEmployee(Boolean.TRUE);
         return new ModelAndView("/register", "user", user);
     }
 

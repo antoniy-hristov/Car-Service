@@ -1,4 +1,4 @@
-package com.carservice.dto;
+package com.carservice.web.dto;
 
 import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.RepairmentType;

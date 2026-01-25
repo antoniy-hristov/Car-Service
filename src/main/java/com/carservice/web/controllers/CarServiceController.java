@@ -1,4 +1,4 @@
-package com.carservice.web.controllers.view;
+package com.carservice.web.controllers;
 
 import com.carservice.data.entities.CarService;
 import com.carservice.data.repositories.CarServiceRepository;
