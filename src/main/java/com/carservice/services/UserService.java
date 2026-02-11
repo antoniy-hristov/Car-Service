@@ -1,7 +1,10 @@
 package com.carservice.services;
 
+import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.Role;
 import com.carservice.data.entities.User;
+import com.carservice.data.repositories.CarServiceRepository;
+import com.carservice.data.repositories.RoleMapper;
 import com.carservice.data.repositories.UserRepository;
 import com.carservice.web.dto.UserDto;
 import lombok.AllArgsConstructor;
@@ -24,6 +27,8 @@ import java.util.Optional;
 public class UserService extends BaseService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CarServiceRepository carServiceRepository;
+    private final RoleMapper roleMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -45,11 +50,22 @@ public class UserService extends BaseService implements UserDetailsService {
         return this.userRepository.findById(user_id);
     }
 
-    public User createUser(UserDto dto) {
+    public void createUser(UserDto dto) {
+        //Assign the user to a car-service
+        if (!dto.getCarServiceName().isEmpty()) {
+            CarService carService = carServiceRepository.getCarServiceByName(dto.getCarServiceName());
+            dto.setCarService(carService);
+        }
+        if (dto.getIsEmployee()) {
+            dto.setRole_id(roleMapper.findRoleByAuthority("EMPLOYEE"));
+        } else {
+            dto.setRole_id(roleMapper.findRoleByAuthority("CUSTOMER"));
+        }
+
         User user = map(dto, User.class);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setCreationTime(Timestamp.valueOf(LocalDateTime.now()));
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 }

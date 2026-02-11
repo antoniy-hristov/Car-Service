@@ -3,7 +3,6 @@ package com.carservice.web.controllers;
 import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.User;
 import com.carservice.data.repositories.CarServiceRepository;
-import com.carservice.data.repositories.RoleMapper;
 import com.carservice.services.UserService;
 import com.carservice.web.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,9 +25,9 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class IndexController {
-    private final RoleMapper roleMapper;
     private final UserService userService;
     private final CarServiceRepository carServiceRepository;
+    private List<CarService> carServices = new ArrayList<>();
 
     @GetMapping("/unauthorized")
     public String unauthorized(HttpServletRequest request, Authentication authentication) {
@@ -77,39 +77,25 @@ public class IndexController {
     @GetMapping("/register")
     public ModelAndView getRegisterForm(Authentication authentication) {
         if (authentication != null) {
-            List<CarService> carServices = carServiceRepository.findAll();
-
             ModelAndView mav = new ModelAndView("/register");
-            mav.addAllObjects(Map.of("carServices", carServices, "userDto", new UserDto()));
+            mav.addAllObjects(Map.of("carServices", getCarServices(), "userDto", new UserDto()));
             return mav;
         }
         return new ModelAndView("/register", "userDto", new UserDto());
     }
 
     @PostMapping("/register")
-    public ModelAndView submitRegister(@Valid UserDto dto,
-                                 BindingResult result,
-                                 @RequestParam(value = "isEmployee", required = false) boolean isEmployee) {
+    public ModelAndView submitRegister(@Valid UserDto dto, BindingResult result) {
         if (result.hasErrors()) {
             //that means validation didn't pass
-            List<CarService> carServices = carServiceRepository.findAll();
-
             ModelAndView mav = new ModelAndView("/register");
+
             mav.addAllObjects(result.getModel());
-            mav.addObject("carServices", carServices);
+            mav.addObject("carServices", getCarServices());
             return mav;
         }
-        try {
-            if (isEmployee) {
-                dto.setRole_id(roleMapper.findRoleByAuthority("EMPLOYEE"));
-            } else {
-                dto.setRole_id(roleMapper.findRoleByAuthority("CUSTOMER"));
-            }
-            if (!dto.getCarServiceName().isEmpty()) {
-                CarService carService = carServiceRepository.getCarServiceByName(dto.getCarServiceName());
-                dto.setCarService(carService);
-            }
 
+        try {
             userService.createUser(dto);
 
             return new ModelAndView("redirect:/login");
@@ -119,6 +105,13 @@ public class IndexController {
             return new ModelAndView("/register");
         }
 
+    }
+
+    private List<CarService> getCarServices() {
+        if (carServices.isEmpty() || carServices.size() != carServiceRepository.count()) {
+            carServices = carServiceRepository.findAll();
+        }
+        return carServices;
     }
 
 }
