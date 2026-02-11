@@ -1,9 +1,10 @@
 package com.carservice.web.controllers;
 
+import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.User;
+import com.carservice.data.repositories.CarServiceRepository;
 import com.carservice.data.repositories.RoleMapper;
 import com.carservice.services.UserService;
-import com.carservice.services.VehicleService;
 import com.carservice.web.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -13,11 +14,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @ControllerAdvice
@@ -25,8 +26,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class IndexController {
     private final RoleMapper roleMapper;
-    private final VehicleService vehicleService;
     private final UserService userService;
+    private final CarServiceRepository carServiceRepository;
 
     @GetMapping("/unauthorized")
     public String unauthorized(HttpServletRequest request, Authentication authentication) {
@@ -74,17 +75,29 @@ public class IndexController {
     }
 
     @GetMapping("/register")
-    public ModelAndView getRegisterForm() {
+    public ModelAndView getRegisterForm(Authentication authentication) {
+        if (authentication != null) {
+            List<CarService> carServices = carServiceRepository.findAll();
+
+            ModelAndView mav = new ModelAndView("/register");
+            mav.addAllObjects(Map.of("carServices", carServices, "userDto", new UserDto()));
+            return mav;
+        }
         return new ModelAndView("/register", "userDto", new UserDto());
     }
 
     @PostMapping("/register")
-    public String submitRegister(@Valid UserDto dto,
+    public ModelAndView submitRegister(@Valid UserDto dto,
                                  BindingResult result,
                                  @RequestParam(value = "isEmployee", required = false) boolean isEmployee) {
         if (result.hasErrors()) {
             //that means validation didn't pass
-            return "/register";
+            List<CarService> carServices = carServiceRepository.findAll();
+
+            ModelAndView mav = new ModelAndView("/register");
+            mav.addAllObjects(result.getModel());
+            mav.addObject("carServices", carServices);
+            return mav;
         }
         try {
             if (isEmployee) {
@@ -92,20 +105,18 @@ public class IndexController {
             } else {
                 dto.setRole_id(roleMapper.findRoleByAuthority("CUSTOMER"));
             }
-            /**
-             *All users are created as CUSTOMER by default, in order for a user to be ADMIN
-             *he has to be manually set as one
-             **/
-            //TODO figure out the worker logic - would there be a different logic for registering a worker
-            // or would it be set manually as well
+            if (!dto.getCarServiceName().isEmpty()) {
+                CarService carService = carServiceRepository.getCarServiceByName(dto.getCarServiceName());
+                dto.setCarService(carService);
+            }
+
             userService.createUser(dto);
 
-            return "redirect:/login";
+            return new ModelAndView("redirect:/login");
 
         } catch (Exception exception) {
             log.error(exception.getMessage());
-            return "/register";
-
+            return new ModelAndView("/register");
         }
 
     }

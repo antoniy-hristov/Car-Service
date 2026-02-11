@@ -1,5 +1,6 @@
 package com.carservice.web.dto;
 
+import com.carservice.data.entities.CarService;
 import com.carservice.data.entities.Role;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
@@ -28,4 +29,6 @@ public class UserDto {
     private Timestamp creationTime;
     private Boolean isEmployee;
     private Role role_id;
+    private String carServiceName;
+    private CarService carService;
 }

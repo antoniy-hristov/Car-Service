@@ -113,17 +113,29 @@
                                id="isEmployee"/>
                     </div>
                 </div>
-
-                <!-- Submit -->
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary">
-                        Create My Account
-                    </button>
-                </div>
-
-            </form>
+                <div class="mb-3 row"
+                     th:if="${session.user != null
+                             && session.user.getRole_id().getAuthority().equals('ADMIN')}"
+                <span>
+                <select th:field="*{carServiceName}">
+                    <option value="">Select Car service</option>
+                    <option th:each="carService : ${carServices}"
+                            th:value="${carService.getName()}"
+                            th:text="${carService.getName()}"></option>
+                </select>
+                     </span>
         </div>
+
+        <!-- Submit -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                Create My Account
+            </button>
+        </div>
+
+        </form>
     </div>
+</div>
 </div>
 
 <footer th:replace="fragments :: footer"></footer>
