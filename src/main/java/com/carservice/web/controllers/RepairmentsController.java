@@ -1,6 +1,5 @@
 package com.carservice.web.controllers;
 
-import com.carservice.data.entities.Repairment;
 import com.carservice.data.entities.User;
 import com.carservice.services.RepairmentService;
 import com.carservice.services.UserService;

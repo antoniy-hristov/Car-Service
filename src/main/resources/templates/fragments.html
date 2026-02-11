@@ -48,6 +48,12 @@
                     <a class="nav-link"
                        th:classappend="${servletPath == '/repairments/assign' ? 'active':''}"
                        href="/repairments/assign">Assign Repairments</a>
+
+                <li class="nav-item"
+                    th:if="${session.user != null and session.user.role_id.authority == 'ADMIN'}">
+                    <a class="nav-link"
+                       th:classappend="${servletPath == '/register' ? 'active':''}"
+                       href="/register">Register employee</a>
                 </li>
                 <li class="nav-item"
                     th:if="${session.user != null and session.user.role_id.authority == 'EMPLOYEE'}">

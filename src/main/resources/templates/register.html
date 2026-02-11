@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments :: head"></head>
-
 <body>
+<th:block th:if="${session.user != null
+                             && session.user.getRole_id().getAuthority().equals('ADMIN')}">
+    <header th:replace="fragments :: header"></header>
+</th:block>
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
