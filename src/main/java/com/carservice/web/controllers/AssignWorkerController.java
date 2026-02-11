@@ -37,11 +37,11 @@ public class AssignWorkerController {
 
     @PostMapping
     public ModelAndView assignWorker(@Valid @ModelAttribute AssignWorkerModel assignWorkerModel) {
-        Optional<Vehicle>  vehicle = vehicleService.getVehicleById(assignWorkerModel.getVehicleId());
+        Vehicle  vehicle = vehicleService.getVehicleById(assignWorkerModel.getVehicleId());
         Optional<User> user = userService.getUserById(assignWorkerModel.getEmployeeId());
-        vehicle.get().setEmployee(user.get());
+        vehicle.setEmployee(user.get());
 
-        vehicleService.saveVehicle(vehicle.get());
+        vehicleService.saveVehicle(vehicle);
         return new ModelAndView("redirect:/my-vehicles");
     }
 }

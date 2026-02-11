@@ -7,7 +7,48 @@
     <h4>Schedule Repairment</h4>
     <form action="#" th:action="@{/schedule-repairment}" th:object="${vehicle}" method="post">
         <div class="form-group">
+            <!-- Hidden field to store selected vehicle ID -->
+            <input type="hidden" th:field="*{selectedVehicleId}" id="selectedVehicleId">
+            
             <table class="register-table">
+                <!-- Vehicle Selection Section -->
+                <tr th:if="${userVehicles != null and userVehicles.size() > 0}">
+                    <td colspan="2">
+                        <h5 style="margin-top: 10px; margin-bottom: 15px;">Select from your existing vehicles</h5>
+                    </td>
+                </tr>
+                <tr th:if="${userVehicles != null and userVehicles.size() > 0}">
+                    <td>
+                        <label for="existingVehicleSelect">Your Vehicles</label>
+                        <select class="form-control" id="existingVehicleSelect">
+                            <option value="">-- Select a vehicle --</option>
+                            <option th:each="v : ${userVehicles}"
+                                    th:value="${v.vehicle_id}"
+                                    th:data-brand="${v.vehicleBrand}"
+                                    th:data-model="${v.vehicleModel}"
+                                    th:data-year="${v.yearOfManufacture}"
+                                    th:data-plate="${v.licensePlateNumber}"
+                                    th:text="${v.licensePlateNumber + ' - ' + v.vehicleBrand + ' ' + v.vehicleModel}">
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" id="clearSelectionBtn" class="btn btn-secondary"
+                                style="margin-top: 25px; display: none;">Clear Selection</button>
+                    </td>
+                </tr>
+                <tr th:if="${userVehicles != null and userVehicles.size() > 0}">
+                    <td colspan="2">
+                        <hr>
+                    </td>
+                </tr>
+                <tr th:if="${userVehicles != null and userVehicles.size() > 0}">
+                    <td colspan="2">
+                        <h5 style="margin-top: 10px; margin-bottom: 15px;">Or enter vehicle details manually</h5>
+                    </td>
+                </tr>
+
+                <!-- Manual Entry Section -->
                 <tr>
                     <td>
                         <label for="licensePlateNumber">License Plate Number</label>
@@ -107,6 +148,80 @@
         <button type="submit" class="btn btn-primary">Schedule Repairment</button>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const vehicleSelect = document.getElementById('existingVehicleSelect');
+        const clearBtn = document.getElementById('clearSelectionBtn');
+        const licensePlateInput = document.getElementById('licensePlateNumber');
+        const brandInput = document.getElementById('vehicleBrand');
+        const modelInput = document.getElementById('vehicleModel');
+        const yearInput = document.getElementById('yearOfManufacture');
+        const selectedVehicleIdInput = document.getElementById('selectedVehicleId');
+
+        if (vehicleSelect) {
+            vehicleSelect.addEventListener('change', function() {
+                if (this.value) {
+                    // Vehicle selected - populate form
+                    const selectedOption = this.options[this.selectedIndex];
+                    licensePlateInput.value = selectedOption.dataset.plate;
+                    brandInput.value = selectedOption.dataset.brand;
+                    modelInput.value = selectedOption.dataset.model;
+                    yearInput.value = selectedOption.dataset.year;
+                    
+                    // Store the selected vehicle ID
+                    selectedVehicleIdInput.value = this.value;
+                    
+                    // Show clear button
+                    if (clearBtn) {
+                        clearBtn.style.display = 'inline-block';
+                    }
+                    
+                    // Mark as readonly to prevent editing but allow form submission
+                    licensePlateInput.readOnly = true;
+                    brandInput.readOnly = true;
+                    modelInput.readOnly = true;
+                    yearInput.readOnly = true;
+                } else {
+                    // Clear selection
+                    clearSelection();
+                }
+            });
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearSelection();
+                });
+            }
+        }
+
+        function clearSelection() {
+            vehicleSelect.value = '';
+            licensePlateInput.value = '';
+            brandInput.value = '';
+            modelInput.value = '';
+            yearInput.value = '';
+            
+            // Clear the hidden vehicle ID
+            selectedVehicleIdInput.value = '';
+            
+            // Enable manual inputs for editing
+            licensePlateInput.readOnly = false;
+            brandInput.readOnly = false;
+            modelInput.readOnly = false;
+            yearInput.readOnly = false;
+            
+            // Hide clear button
+            if (clearBtn) {
+                clearBtn.style.display = 'none';
+            }
+            
+            licensePlateInput.focus();
+        }
+    });
+</script>
+
 <footer th:replace="fragments :: footer"></footer>
 </body>
 </html>

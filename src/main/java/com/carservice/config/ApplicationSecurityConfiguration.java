@@ -1,28 +1,19 @@
 package com.carservice.config;
 
-import com.carservice.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class ApplicationSecurityConfiguration {
-
-    private final UserService userService;
-
-    public ApplicationSecurityConfiguration(UserService userService) {
-        this.userService = userService;
-    }
 
     @Bean
     public ModelMapper modelMapper() {
@@ -35,10 +26,10 @@ public class ApplicationSecurityConfiguration {
     }
 
     @Bean
-    public DaoAuthenticationProvider authProvider() {
+    public DaoAuthenticationProvider authProvider(UserDetailsService userService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userService);
-        authProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 

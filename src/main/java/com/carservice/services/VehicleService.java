@@ -7,6 +7,7 @@ import com.carservice.data.repositories.RepairmentTypeRepository;
 import com.carservice.data.repositories.VehicleRepository;
 import com.carservice.web.model.MyVehiclesModel;
 import com.carservice.web.model.VehicleModel;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,8 @@ public class VehicleService {
         return myVehiclesModel;
     }
 
-    public Optional<Vehicle> getVehicleById(Long vehicleId) {
-        return this.vehicleRepository.findById(vehicleId);
+    public Vehicle getVehicleById(Long vehicleId) {
+        return this.vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new EntityNotFoundException("Vehicle not found"));
     }
 }

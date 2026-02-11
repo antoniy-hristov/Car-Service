@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/schedule-repairment")
@@ -58,23 +59,44 @@ public class ScheduleRepairmentController {
     }
 
     @GetMapping
-    public ModelAndView getScheduleRepairment() {
+    public ModelAndView getScheduleRepairment(HttpServletRequest request) {
         VehicleModel vehicle = new VehicleModel();
         vehicle.setRepairmentTypes(repairmentTypeRepository.findAll());
+        
+        User user = (User) request.getSession().getAttribute("user");
+        Set<Vehicle> userVehicles = user != null ? user.getVehicles() : null;
+        
+        ModelAndView modelAndView = new ModelAndView("/schedule-repairment", "vehicle", vehicle);
+        modelAndView.addObject("userVehicles", userVehicles);
+        modelAndView.addObject("carServicesList", carServiceRepository.findAll());
 
-        return new ModelAndView("/schedule-repairment", "vehicle", vehicle);
+        return modelAndView;
     }
 
     @PostMapping
     public ModelAndView scheduleRepairment(HttpServletRequest request,
                                            @Valid @ModelAttribute("vehicle") VehicleModel vehicle, BindingResult result) {
         if (result.hasErrors()) {
-            return new ModelAndView("/schedule-repairment", "vehicle", vehicle);
+            User user = (User) request.getSession().getAttribute("user");
+            Set<Vehicle> userVehicles = user != null ? user.getVehicles() : null;
+            ModelAndView modelAndView = new ModelAndView("/schedule-repairment", "vehicle", vehicle);
+            modelAndView.addObject("userVehicles", userVehicles);
+            modelAndView.addObject("carServicesList", carServiceRepository.findAll());
+            return modelAndView;
         }
         User user = (User) request.getSession().getAttribute("user");
         vehicle.setOwner(user);
 
-        Vehicle savedVehicle = vehicleService.saveVehicle(modelMapper.map(vehicle, Vehicle.class));
+        // Check if a pre-existing vehicle was selected
+        Vehicle savedVehicle;
+        if (vehicle.getSelectedVehicleId() != null && vehicle.getSelectedVehicleId() > 0) {
+            // Use the existing vehicle - don't save it again
+            savedVehicle = vehicleService.getVehicleById(vehicle.getSelectedVehicleId());
+        } else {
+            // Save as a new vehicle
+            savedVehicle = vehicleService.saveVehicle(modelMapper.map(vehicle, Vehicle.class));
+        }
+        
         /*TODO a repairment ticket has to be created once a vehicle is registered
         *  that means that someone needs to be assigned to that vehicle and the repairment may start
         *  however, there is an issue with setting the necessary fields because for some reason

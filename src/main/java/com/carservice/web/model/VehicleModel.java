@@ -30,6 +30,7 @@ public class VehicleModel implements Serializable {
     private String selectedRepairmentType;
     private LocalDateTime selectedTimeForRepair;
     private User employee;
+    private Long selectedVehicleId;
     @Override
     public String toString() {
         return "VehicleModel{" +

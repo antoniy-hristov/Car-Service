@@ -1,4 +1,4 @@
-package com.carservice.web.model;
+package com.carservice.web.dto;
 
 import com.carservice.data.entities.Role;
 import jakarta.persistence.Column;
@@ -8,7 +8,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class UserModel {
+public class UserDto {
     private Long user_id;
     @NotEmpty(message = "Username field is required!")
     private String username;

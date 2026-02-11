@@ -48,6 +48,9 @@ public class User implements UserDetails {
     private Role role_id;
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Vehicle> vehicles;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "car_service_id", nullable = true)
+    private CarService carService;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

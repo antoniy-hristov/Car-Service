@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head"></head>
+<body>
+<header th:replace="fragments :: header"></header>
+<div class="col-12">
+    <h2>Employee Dashboard</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Your Information</h5>
+                    <p><strong>Name:</strong> <span th:text="${employee.firstName} + ' ' + ${employee.lastName}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
+                    <p><strong>Phone:</strong> <span th:text="${employee.phoneNumber}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Assigned Car Service</h5>
+                    <div th:if="${carService != null}">
+                        <p><strong>Service Name:</strong> <span th:text="${carService.name}"></span></p>
+                        <p><strong>Location:</strong> <span th:text="${carService.location}"></span></p>
+                        <p th:if="${carService.dedicatedBrand != null}">
+                            <strong>Dedicated Brand:</strong> <span th:text="${carService.dedicatedBrand}"></span>
+                        </p>
+                    </div>
+                    <div th:if="${carService == null}">
+                        <p class="text-muted">No car service assigned yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Assigned Repairments</h3>
+    <div th:if="${repairments != null and repairments.size() > 0}">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Vehicle License Plate</th>
+                    <th>Vehicle Details</th>
+                    <th>Repairment Type</th>
+                    <th>Status</th>
+                    <th>Creation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="repairment : ${repairments}">
+                    <td th:text="${repairment.vehicle.licensePlateNumber}"></td>
+                    <td th:text="${repairment.vehicle.vehicleBrand} + ' ' + ${repairment.vehicle.vehicleModel} + ' (' + ${repairment.vehicle.yearOfManufacture} + ')'"></td>
+                    <td th:text="${repairment.repairmentType.typeOfRepairment}"></td>
+                    <td>
+                        <span class="badge" 
+                              th:classappend="${repairment.isCompleted} ? 'bg-success' : 'bg-warning'"
+                              th:text="${repairment.isCompleted} ? 'Completed' : 'In Progress'">
+                        </span>
+                    </td>
+                    <td th:text="${#dates.format(repairment.creationDate, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${repairments == null or repairments.size() == 0}">
+        <p class="alert alert-info">No repairments assigned to your car service at the moment.</p>
+    </div>
+</div>
+
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>
