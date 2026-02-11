@@ -6,7 +6,7 @@
 <body>
 <div class="col-6">
     <h4>Login</h4>
-    <form action="#" th:action="@{/login}" th:object="${user}" method="post">
+    <form action="#" th:action="@{/login}" method="post">
         <div class="form-group .child">
             <table class="login-table">
                 <div th:if="${param.error}" class="alert alert-danger">
@@ -21,7 +21,7 @@
                 <tr>
                     <td>
                         <label for="username">Username</label>
-                        <input class="form-control" type="text" th:field="*{username}" placeholder="Username"
+                        <input class="form-control" type="text" name="username" placeholder="Username"
                                id="username">
                     </td>
                 </tr>
@@ -29,7 +29,7 @@
                 <tr>
                     <td>
                         <label for="password">Password</label>
-                        <input class="form-control" type="password" th:field="*{password}" placeholder="Password"
+                        <input class="form-control" type="password" name="password" placeholder="Password"
                                id="password">
                     </td>
                 </tr>

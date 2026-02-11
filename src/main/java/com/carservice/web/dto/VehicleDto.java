@@ -1,4 +1,4 @@
-package com.carservice.web.model;
+package com.carservice.web.dto;
 
 import com.carservice.data.entities.RepairmentType;
 import com.carservice.data.entities.User;
@@ -12,7 +12,7 @@ import java.time.Year;
 import java.util.List;
 
 @Data
-public class VehicleModel implements Serializable {
+public class VehicleDto implements Serializable {
     private Long vehicle_id;
     @Pattern(regexp = "[A-Z]{1,2}[0-9]*[A-Z]{2}",
             message = "Your license plate input doesn't match the standard!")

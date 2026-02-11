@@ -3,15 +3,15 @@ package com.carservice.web.controllers;
 import com.carservice.data.entities.User;
 import com.carservice.data.entities.Vehicle;
 import com.carservice.data.repositories.CarServiceRepository;
-import com.carservice.data.repositories.RepairmentTypeRepository;
-import com.carservice.web.dto.RepairmentDTO;
+import com.carservice.services.RepairmentTypeService;
+import com.carservice.web.dto.RepairmentDto;
 import com.carservice.services.RepairmentService;
 import com.carservice.services.VehicleService;
-import com.carservice.web.model.VehicleModel;
+import com.carservice.web.dto.VehicleDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,35 +22,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Controller
 @RequestMapping("/schedule-repairment")
+@RequiredArgsConstructor
 public class ScheduleRepairmentController {
-
-    private final RepairmentTypeRepository repairmentTypeRepository;
-    private final VehicleModel transitionalModel = new VehicleModel();
+    private final RepairmentTypeService repairmentTypeService;
+    private final VehicleDto transitionalModel = new VehicleDto();
     private final VehicleService vehicleService;
     private final CarServiceRepository carServiceRepository;
     private final RepairmentService repairmentService;
     private final ModelMapper modelMapper;
 
-
-    @Autowired
-    public ScheduleRepairmentController(RepairmentTypeRepository repairmentTypeRepository,
-                                        VehicleService vehicleService, CarServiceRepository carServiceRepository,
-                                        RepairmentService repairmentService, ModelMapper modelMapper) {
-        this.repairmentTypeRepository = repairmentTypeRepository;
-        this.vehicleService = vehicleService;
-        this.carServiceRepository = carServiceRepository;
-        this.repairmentService = repairmentService;
-        this.modelMapper = modelMapper;
-    }
-
     @ModelAttribute("vehicle")
     private Model getModel(Model model) {
-        this.transitionalModel.setRepairmentTypes(repairmentTypeRepository.findAll());
+        this.transitionalModel.setRepairmentTypes(repairmentTypeService.getAllRepairmentTypes());
 
         model.addAttribute("vehicle", transitionalModel);
         model.addAttribute("carServicesList", carServiceRepository.findAll());
@@ -60,8 +49,8 @@ public class ScheduleRepairmentController {
 
     @GetMapping
     public ModelAndView getScheduleRepairment(HttpServletRequest request) {
-        VehicleModel vehicle = new VehicleModel();
-        vehicle.setRepairmentTypes(repairmentTypeRepository.findAll());
+        VehicleDto vehicle = new VehicleDto();
+        vehicle.setRepairmentTypes(repairmentTypeService.getAllRepairmentTypes());
         
         User user = (User) request.getSession().getAttribute("user");
         Set<Vehicle> userVehicles = user != null ? user.getVehicles() : null;
@@ -75,7 +64,7 @@ public class ScheduleRepairmentController {
 
     @PostMapping
     public ModelAndView scheduleRepairment(HttpServletRequest request,
-                                           @Valid @ModelAttribute("vehicle") VehicleModel vehicle, BindingResult result) {
+                                           @Valid @ModelAttribute("vehicle") VehicleDto vehicle, BindingResult result) {
         if (result.hasErrors()) {
             User user = (User) request.getSession().getAttribute("user");
             Set<Vehicle> userVehicles = user != null ? user.getVehicles() : null;
@@ -94,7 +83,7 @@ public class ScheduleRepairmentController {
             savedVehicle = vehicleService.getVehicleById(vehicle.getSelectedVehicleId());
         } else {
             // Save as a new vehicle
-            savedVehicle = vehicleService.saveVehicle(modelMapper.map(vehicle, Vehicle.class));
+            savedVehicle = vehicleService.saveVehicle(vehicle);
         }
         
         /*TODO a repairment ticket has to be created once a vehicle is registered
@@ -103,16 +92,15 @@ public class ScheduleRepairmentController {
         *  thymeleaf works correctly only with getting the strings from the form, nothing else
         *  the vehicle class needs to be reworked and a single vehicle shouldn't take more than one  repairment
         * */
-        RepairmentDTO repairment = new RepairmentDTO();
+        RepairmentDto repairment = new RepairmentDto();
         repairment.setRepairmentType(vehicle.getRepairmentTypes().get(0));
         repairment.setVehicle(savedVehicle);
         repairment.setCarService(carServiceRepository.
                 getCarServiceByName(vehicle.getSelectedCarService()));
         repairment.setIsCompleted(false);
-        repairment.setCreationDate(Timestamp.valueOf(LocalDateTime.now()));
+        repairment.setCreationDate(Instant.now());
         repairmentService.saveRepairment(repairment);
-//        return new ModelAndView("redirect:/my-vehicles", "vehicles",
-//                vehicleService.buildMyVehiclesModel(vehicle));
+
         return new ModelAndView("redirect:/my-vehicles");
     }
 

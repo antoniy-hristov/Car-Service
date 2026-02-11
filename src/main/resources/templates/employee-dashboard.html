@@ -5,13 +5,14 @@
 <header th:replace="fragments :: header"></header>
 <div class="col-12">
     <h2>Employee Dashboard</h2>
-    
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Your Information</h5>
-                    <p><strong>Name:</strong> <span th:text="${employee.firstName} + ' ' + ${employee.lastName}"></span></p>
+                    <p><strong>Name:</strong> <span th:text="${employee.firstName} + ' ' + ${employee.lastName}"></span>
+                    </p>
                     <p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
                     <p><strong>Phone:</strong> <span th:text="${employee.phoneNumber}"></span></p>
                 </div>
@@ -39,35 +40,44 @@
 
     <hr>
 
-    <h3>Assigned Repairments</h3>
-    <div th:if="${repairments != null and repairments.size() > 0}">
+    <h3 th:if="${session.user.role_id.authority == 'ADMIN'}">Assigned Repairments</h3>
+    <div th:if="${repairments != null and repairments.size() > 0 and session.user.role_id.authority == 'ADMIN'}">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
-                <tr>
-                    <th>Vehicle License Plate</th>
-                    <th>Vehicle Details</th>
-                    <th>Repairment Type</th>
-                    <th>Status</th>
-                    <th>Creation Date</th>
-                </tr>
+            <tr>
+                <th>Vehicle License Plate</th>
+                <th>Vehicle Details</th>
+                <th>Repairment Type</th>
+                <th>Status</th>
+                <th>Creation Date</th>
+                <th>Assigned Employee</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="repairment : ${repairments}">
-                    <td th:text="${repairment.vehicle.licensePlateNumber}"></td>
-                    <td th:text="${repairment.vehicle.vehicleBrand} + ' ' + ${repairment.vehicle.vehicleModel} + ' (' + ${repairment.vehicle.yearOfManufacture} + ')'"></td>
-                    <td th:text="${repairment.repairmentType.typeOfRepairment}"></td>
-                    <td>
-                        <span class="badge" 
+            <tr th:each="repairment : ${repairments}">
+                <td th:text="${repairment.vehicle.licensePlateNumber}"></td>
+                <td th:text="${repairment.vehicle.vehicleBrand} + ' ' + ${repairment.vehicle.vehicleModel} + ' (' + ${repairment.vehicle.yearOfManufacture} + ')'"></td>
+                <td th:text="${repairment.repairmentType.typeOfRepairment}"></td>
+                <td>
+                        <span class="badge"
                               th:classappend="${repairment.isCompleted} ? 'bg-success' : 'bg-warning'"
                               th:text="${repairment.isCompleted} ? 'Completed' : 'In Progress'">
                         </span>
-                    </td>
-                    <td th:text="${#dates.format(repairment.creationDate, 'yyyy-MM-dd HH:mm')}"></td>
-                </tr>
+                </td>
+                <td th:text="${#dates.format(repairment.creationDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${repairment.assignedEmployee == null} ? ' bg-secondary' : ' bg-primary'"
+                          th:text="${repairment.assignedEmployee == null
+                          ? 'Unassigned'
+                          : repairment.assignedEmployee.firstName + ' ' + repairment.assignedEmployee.lastName}">
+                    </span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
-    <div th:if="${repairments == null or repairments.size() == 0}">
+    <div th:if="${repairments == null or repairments.size() == 0 and session.user.role_id.authority == 'ADMIN'}">
         <p class="alert alert-info">No repairments assigned to your car service at the moment.</p>
     </div>
 </div>

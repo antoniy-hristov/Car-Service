@@ -4,7 +4,7 @@
 </head>
 <body style="text-align: center">
 <header th:replace="fragments :: header"></header>
-<h1 style="align-content: center" th:text="'Hello and  ' + ${welcome}"></h1>
+<h1 style="align-content: center" th:text="'Hello and welcome to the Car Service System!'"></h1>
 <br/>
 <h1 th:text="'Whats wrong with your vehicle?'"></h1>
 <div th:if="${session.user.getRole_id().getAuthority().equals('ADMIN')}">

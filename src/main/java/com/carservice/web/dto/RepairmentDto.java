@@ -5,20 +5,15 @@ import com.carservice.data.entities.RepairmentType;
 import com.carservice.data.entities.Vehicle;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
-public class RepairmentDTO {
+public class RepairmentDto {
     private Long id;
-
     private Vehicle vehicle;
-
     private RepairmentType repairmentType;
-
     private CarService carService;
-
-    private Timestamp creationDate;
-
+    private Instant creationDate;
     //this indicates whether a repairment has been completed
     private Boolean isCompleted;
 }

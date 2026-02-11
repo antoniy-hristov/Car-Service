@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -19,10 +20,10 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class UserService implements UserDetailsService {
+@Transactional
+public class UserService extends BaseService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ModelMapper modelMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -45,7 +46,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(UserDto dto) {
-        User user = modelMapper.map(dto, User.class);
+        User user = map(dto, User.class);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setCreationTime(Timestamp.valueOf(LocalDateTime.now()));
 

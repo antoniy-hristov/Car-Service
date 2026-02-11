@@ -10,7 +10,9 @@
     <h1>Car Service System</h1>
     <div class="loggedIn">
         Hello,
-        <span th:text="${session.user.getFirstName()}" sec:authorize="isAuthenticated()"></span>
+        <span th:if="${session.user != null}" th:text="${session.user.getFirstName()}"
+              sec:authorize="isAuthenticated()"></span>
+        <span th:if="${session.user == null}" sec:authorize="isAuthenticated()">User</span>
         <a class="btn" th:href="@{/logout}">Logout</a>
     </div>
 
@@ -22,28 +24,36 @@
                        th:classappend="${servletPath == '/' ? 'active':''}"
                        href="/">Home</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item"
+                    th:if="${session.user != null and session.user.role_id.authority == 'CUSTOMER'}">
                     <a class="nav-link"
                        th:classappend="${servletPath == '/car-services' ? 'active':''}"
                        href="/car-services">List of Car Services</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item"
+                    th:if="${session.user != null and session.user.role_id.authority == 'CUSTOMER'}">
                     <a class="nav-link"
                        th:classappend="${servletPath == '/schedule-repairment' ? 'active':''}"
                        href="/schedule-repairment">Schedule Repairment</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item"
+                    th:if="${session.user != null and session.user.role_id.authority == 'CUSTOMER'}">
                     <a class="nav-link"
                        th:classappend="${servletPath == '/my-vehicles' ? 'active':''}"
                        href="/my-vehicles">My Vehicles</a>
                 </li>
                 <!--This section should be visible only if the user type is employee or admin-->
                 <li class="nav-item"
-                    th:if="${session.user.getRole_id().getAuthority().equals('ADMIN')
-                    or session.user.getRole_id().getAuthority().equals('EMPLOYEE')}">
+                    th:if="${session.user != null and session.user.role_id.authority == 'ADMIN'}">
                     <a class="nav-link"
-                       th:classappend="${servletPath == '/assign-worker' ? 'active':''}"
-                       href="/assign-worker">Assign Repairments</a>
+                       th:classappend="${servletPath == '/repairments/assign' ? 'active':''}"
+                       href="/repairments/assign">Assign Repairments</a>
+                </li>
+                <li class="nav-item"
+                    th:if="${session.user != null and session.user.role_id.authority == 'EMPLOYEE'}">
+                    <a class="nav-link"
+                       th:classappend="${servletPath == '/repairments' ? 'active':''}"
+                       href="/repairments"> Repairments</a>
                 </li>
             </ul>
         </div>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head"></head>
+<body>
+<header th:replace="fragments :: header"></header>
+<div class="col-12">
+    <h2>Assign Repairments to Employees</h2>
+    
+    <div th:if="${pendingRepairments != null and pendingRepairments.size() > 0}">
+        <div class="alert alert-info">
+            <strong>Total Pending Repairments:</strong> <span th:text="${pendingRepairments.size()}"></span>
+        </div>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Vehicle</th>
+                    <th>License Plate</th>
+                    <th>Repairment Type</th>
+                    <th>Car Service</th>
+                    <th>Created</th>
+                    <th>Assign To</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="repairment : ${pendingRepairments}">
+                    <td th:text="${repairment.vehicle.vehicleBrand} + ' ' + ${repairment.vehicle.vehicleModel}"></td>
+                    <td th:text="${repairment.vehicle.licensePlateNumber}"></td>
+                    <td th:text="${repairment.repairmentType.typeOfRepairment}"></td>
+                    <td th:text="${repairment.carService.name}"></td>
+                    <td th:text="${#dates.format(repairment.creationDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <form th:action="@{/repairments/assign}" method="post" class="form-inline">
+                            <select name="employeeId" class="form-control form-control-sm" style="width: auto;">
+                                <option value="">-- Select Employee --</option>
+                                <option th:each="emp : ${employees}" 
+                                        th:value="${emp.user_id}"
+                                        th:text="${emp.firstName} + ' ' + ${emp.lastName} + ' (' + ${emp.carService?.name ?: 'No Service'} + ')'">
+                                </option>
+                            </select>
+                            <input type="hidden" name="repairmentId" th:value="${repairment.id}">
+                            <button type="submit" class="btn btn-sm btn-success ms-2">Assign</button>
+                        </form>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning">Pending</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${pendingRepairments == null or pendingRepairments.size() == 0}">
+        <div class="alert alert-success">
+            <h4 class="alert-heading">All Repairments Assigned!</h4>
+            <p>There are no pending repairments waiting for assignment.</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Quick Stats</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Employees</h5>
+                    <p class="card-text">
+                        <strong th:text="${employees != null ? employees.size() : 0}"></strong> employees available
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Work</h5>
+                    <p class="card-text">
+                        <strong th:text="${pendingRepairments != null ? pendingRepairments.size() : 0}"></strong> repairments need assignment
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments :: footer"></footer>
+</body>
+</html>

@@ -1,7 +1,6 @@
 package com.carservice.data.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -25,12 +24,12 @@ public class Vehicle {
     private Year yearOfManufacture;
     @Column(nullable = false)
     private LocalDateTime selectedTimeForRepair;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User employee;
 
     //! A vehicle could have many repairments but may be registered only once
-    @OneToMany(mappedBy = "vehicle")
+    @OneToMany(mappedBy = "vehicle", fetch = FetchType.LAZY)
     private List<Repairment> repairments;
 }

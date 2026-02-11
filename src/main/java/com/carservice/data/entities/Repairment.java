@@ -2,8 +2,10 @@ package com.carservice.data.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 //TODO this entire class may need to be rewritten
 //TODO this table should store all the repairments for the vehicles
@@ -28,7 +30,12 @@ public class Repairment {
     @JoinColumn(name = "carService_id", nullable = false)
     private CarService carService;
 
-    private Timestamp creationDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_employee_id")
+    private User assignedEmployee;
+
+    @CreatedDate
+    private Instant creationDate;
 
     //this indicates whether a repairment has been completed
     private Boolean isCompleted;

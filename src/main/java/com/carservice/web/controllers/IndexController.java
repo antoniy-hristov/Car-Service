@@ -15,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,15 +38,16 @@ public class IndexController {
 
     @GetMapping("/")
     public String getIndex(HttpServletRequest request, Model model, Authentication authentication) {
-        if (authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("EMPLOYEE"))) {
-            return "redirect:/employee-dashboard";
-        }
-        final String welcomeMessage = "Welcome to the Car Service System!";
-        model.addAttribute("welcome", welcomeMessage);
-
+        if (authentication != null) {
+            if (authentication.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("EMPLOYEE")
+                            || auth.getAuthority().equals("ADMIN"))) {
+                return "redirect:/employee-dashboard";
+            }
         User user = (User) authentication.getPrincipal();
         request.getSession().setAttribute("user", user);
+
+        }
         return "index";
     }
 
@@ -63,6 +63,10 @@ public class IndexController {
         
         // Role-based redirect after successful login
         if (user.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ADMIN"))) {
+            return "redirect:/repairments/assign";
+        }
+        if (user.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("EMPLOYEE"))) {
             return "redirect:/employee-dashboard";
         }
@@ -71,12 +75,7 @@ public class IndexController {
 
     @GetMapping("/register")
     public ModelAndView getRegisterForm() {
-        UserDto user = new UserDto();
-
-//        transitionalModel = user;
-
-        user.setIsEmployee(Boolean.TRUE);
-        return new ModelAndView("/register", "user", user);
+        return new ModelAndView("/register", "userDto", new UserDto());
     }
 
     @PostMapping("/register")
@@ -109,11 +108,6 @@ public class IndexController {
 
         }
 
-    }
-
-    @ModelAttribute("servletPath")
-    String getRequestServletPath(HttpServletRequest request) {
-        return request.getServletPath();
     }
 
 }

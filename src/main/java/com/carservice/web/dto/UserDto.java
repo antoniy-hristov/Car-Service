@@ -3,6 +3,7 @@ package com.carservice.web.dto;
 import com.carservice.data.entities.Role;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -22,6 +23,7 @@ public class UserDto {
     @NotEmpty(message = "Last Name field is required!")
     private String lastName;
     @NotEmpty(message = "PhoneNumber field is required!")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "Phone number is not in the correct format.")
     private String phoneNumber;
     private Timestamp creationTime;
     private Boolean isEmployee;

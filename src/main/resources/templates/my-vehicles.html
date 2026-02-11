@@ -4,32 +4,35 @@
 <body>
 <header th:replace="fragments :: header"></header>
 <h4 style="margin: 2%">My Vehicles</h4>
-<div class="col-6">
+<div class="col-8">
     <h3 th:unless="${vehicles} and ${vehicles.size()}">You have no registered vehicles at the moment!</h3>
     <table th:if="${vehicles.size()>0}" class="table table-hover">
-        <th>Plate Number</th>
-        <th>Vehicle Brand</th>
-        <th>Vehicle Model</th>
-        <th>Year of Manufacture</th>
-        <th>Selected Repairment time</th>
-        <th>Assigned worker</th>
-        <tr th:each="vehicle : ${vehicles}">
-            <td th:text="${vehicle.licensePlateNumber}"></td>
-            <td th:text="${vehicle.vehicleBrand}"></td>
-            <td th:text="${vehicle.vehicleModel}"></td>
-            <td th:text="${vehicle.yearOfManufacture}"></td>
-            <td th:text="${vehicle.getSelectedTimeForRepair()}"></td>
-            <td>
-                <span th:if="${vehicle.getEmployee() != null}">
-                    <!-- Content to display if the condition is true -->
-                     <span th:text="${vehicle.getEmployee().getFirstName()}"></span>
-                </span>
-                <span th:if="${vehicle.getEmployee() == null}">
-                    <!-- Content to display if the condition is false (else part) -->
-                    No employee selected
-                </span>
-            </td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Plate Number</th>
+                <th>Vehicle Brand</th>
+                <th>Vehicle Model</th>
+                <th>Year of Manufacture</th>
+                <th>Selected Repairment Time</th>
+                <th>Repairment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="vehicle : ${vehicles}">
+                <td th:text="${vehicle.licensePlateNumber}"></td>
+                <td th:text="${vehicle.vehicleBrand}"></td>
+                <td th:text="${vehicle.vehicleModel}"></td>
+                <td th:text="${vehicle.yearOfManufacture}"></td>
+                <td th:text="${#temporals.format(vehicle.selectedTimeForRepair, 'yyyy-MM-dd HH:mm')}"></td>
+                <td>
+                    <span th:each="repairment : ${vehicle.repairments}">
+                        <span th:if="${!repairment.isCompleted}" class="badge badge-warning">In Progress</span>
+                        <span th:if="${repairment.isCompleted}" class="badge badge-success">Completed</span>
+                    </span>
+                    <span th:if="${vehicle.repairments.isEmpty()}" class="badge badge-secondary">No Repairments</span>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </div>
 <footer th:replace="fragments :: footer"></footer>
