@@ -6,7 +6,6 @@ import com.carservice.data.repositories.VehicleRepository;
 import com.carservice.web.dto.VehicleDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

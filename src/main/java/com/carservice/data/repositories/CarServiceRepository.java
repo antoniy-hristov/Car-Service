@@ -11,6 +11,7 @@ import java.util.Set;
 public interface CarServiceRepository extends JpaRepository<CarService, Long> {
 
     Set<CarService> getCarServiceByDedicatedBrand(String dedicatedBrand);
+
     @Override
     List<CarService> findAll();
 

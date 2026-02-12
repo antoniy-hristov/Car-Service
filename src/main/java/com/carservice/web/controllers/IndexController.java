@@ -11,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class IndexController {
     }
 
     @GetMapping("/")
-    public String getIndex(HttpServletRequest request, Model model, Authentication authentication) {
+    public String getIndex(HttpServletRequest request, Authentication authentication) {
         if (authentication != null) {
             if (authentication.getAuthorities().stream()
                     .anyMatch(auth -> auth.getAuthority().equals("EMPLOYEE")

@@ -1,14 +1,11 @@
 package com.carservice.services;
 
 import com.carservice.data.entities.CarService;
-import com.carservice.data.entities.Role;
 import com.carservice.data.entities.User;
 import com.carservice.data.repositories.CarServiceRepository;
-import com.carservice.data.repositories.RoleMapper;
 import com.carservice.data.repositories.UserRepository;
 import com.carservice.web.dto.UserDto;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +25,7 @@ public class UserService extends BaseService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CarServiceRepository carServiceRepository;
-    private final RoleMapper roleMapper;
+    private final RoleService roleService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,7 +37,6 @@ public class UserService extends BaseService implements UserDetailsService {
     }
 
     public List<User> getAllEmployees() {
-        Role role = new Role();
         List<User> allUsers = this.userRepository.findAll();
         allUsers.removeIf(user -> !user.getRole_id().getAuthority().equals("EMPLOYEE"));
         return allUsers;
@@ -57,9 +53,9 @@ public class UserService extends BaseService implements UserDetailsService {
             dto.setCarService(carService);
         }
         if (dto.getIsEmployee()) {
-            dto.setRole_id(roleMapper.findRoleByAuthority("EMPLOYEE"));
+            dto.setRole_id(roleService.getRoleByAuthority("EMPLOYEE"));
         } else {
-            dto.setRole_id(roleMapper.findRoleByAuthority("CUSTOMER"));
+            dto.setRole_id(roleService.getRoleByAuthority("CUSTOMER"));
         }
 
         User user = map(dto, User.class);

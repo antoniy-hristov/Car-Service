@@ -26,10 +26,8 @@ public class MyVehiclesController {
     public String getMyVehicles(HttpServletRequest request, Model model) {
         User user = (User) request.getSession().getAttribute("user");
 
-        // Get all vehicles for this user
         Set<Vehicle> vehicles = vehicleService.getAllVehiclesByOwner(user);
         
-        // Force load repairments for each vehicle within transaction context
         vehicles.forEach(vehicle -> vehicle.getRepairments().size());
         
         model.addAttribute("vehicles", vehicles);
